@@ -1,0 +1,7 @@
+com\company\cas\dao\AnnouncementDAOImpl.class
+com\company\cas\dao\AnnouncementDAO.class
+com\company\cas\model\Announcement.class
+com\company\cas\model\Attachment.class
+com\company\cas\service\AnnouncementServiceImpl.class
+com\company\cas\service\AnnouncementService.class
+com\company\cas\controller\AnnouncementController.class
