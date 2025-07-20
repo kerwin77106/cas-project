@@ -18,7 +18,8 @@
                     <h3>${empty announcement.id ? '新增公佈事項' : '編輯公佈事項'}</h3>
 
                     <form:form modelAttribute="announcement"
-                        action="${pageContext.request.contextPath}/announcements/save" method="post">
+                        action="${pageContext.request.contextPath}/announcements/save" method="post"
+                        enctype="multipart/form-data">
 
                         <form:hidden path="id" />
 
@@ -33,7 +34,8 @@
                                 <tr>
                                     <td class="bg-light">發佈日期:</td>
                                     <td>
-                                        <form:input type="datetime-local" path="publishDate" cssClass="form-control" required="true" />
+                                        <form:input type="datetime-local" path="publishDate" cssClass="form-control"
+                                            required="true" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -54,6 +56,13 @@
                                         <%-- ▼▼▼ 我們將原本的 form:textarea 換成這個 ▼▼▼ --%>
                                             <textarea name="content"
                                                 id="contentEditor">${announcement.content}</textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-light">上傳附件:</td>
+                                    <td>
+                                        <%-- `multiple="true" ` 允許一次選擇多個檔案 --%>
+                                            <input type="file" name="files" class="form-control" multiple="true" />
                                     </td>
                                 </tr>
                             </tbody>

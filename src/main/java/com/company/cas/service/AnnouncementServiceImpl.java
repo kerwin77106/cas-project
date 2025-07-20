@@ -3,43 +3,58 @@ package com.company.cas.service;
 import com.company.cas.dao.AnnouncementDAO;
 import com.company.cas.model.Announcement;
 import java.util.List;
+import java.util.Optional;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-// @Service 註解告訴 Spring，這是一個業務邏輯層的元件(Bean)
 @Service
 public class AnnouncementServiceImpl implements AnnouncementService {
 
-    // 自動注入我們寫好的 DAO，讓 Service 可以呼叫它
     @Autowired
     private AnnouncementDAO announcementDAO;
 
-    // @Transactional 註解是 Service 層的精髓！
-    // Spring 會自動為這個方法加上資料庫交易控制。
-    // 方法開始時開啟交易，方法成功結束時提交(commit)，若中途發生錯誤則回滾(rollback)。
-    @Transactional
     @Override
+    @Transactional
     public void saveOrUpdate(Announcement announcement) {
+        if (announcement == null) { return; }
+        if (announcement.getContent() != null) {
+            String safeContent = Jsoup.clean(announcement.getContent(), Safelist.basicWithImages());
+            announcement.setContent(safeContent);
+        }
         announcementDAO.saveOrUpdate(announcement);
     }
 
-    // 對於「只讀取」的操作，可以加上 readOnly = true，能優化效能
-    @Transactional(readOnly = true)
     @Override
-    public Announcement findById(Integer id) {
-        return announcementDAO.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<Announcement> findByIdWithAttachments(Long id) {
+        return Optional.ofNullable(announcementDAO.findByIdWithAttachments(id));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<Announcement> findAllActive() {
-        return announcementDAO.findAllActive();
+    @Transactional(readOnly = true)
+    public Page<Announcement> findPaginatedWithAttachments(int pageNumber, int pageSize) {
+        int pageIndex = pageNumber - 1 < 0 ? 0 : pageNumber - 1;
+        List<Announcement> announcements = announcementDAO.findPaginatedWithAttachments(pageIndex, pageSize);
+        long totalItems = announcementDAO.countAllActive();
+        return new PageImpl<>(announcements, PageRequest.of(pageIndex, pageSize), totalItems);
     }
 
+    @Override
     @Transactional
-    @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         announcementDAO.softDelete(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Deprecated
+    public Announcement findById(Long id) {
+        return announcementDAO.findById(id);
     }
 }

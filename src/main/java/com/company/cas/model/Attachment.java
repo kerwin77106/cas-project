@@ -19,7 +19,7 @@ public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     // @ManyToOne 表示「多對一」的關係：多個附件可以屬於一個公告
     // @JoinColumn 指定了外鍵欄位的名稱
@@ -45,11 +45,11 @@ public class Attachment {
 
     // --- Getters and Setters ---
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
